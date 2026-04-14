@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "env": {
+    "DATABASE_URL": "file:./dev.db"
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "@vercel/node@3"
+    }
+  }
+}

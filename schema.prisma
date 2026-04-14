@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Feedback {
+  id           String   @id @default(uuid())
+  passengerId  String
+  tripId       String
+  vehicleId    String
+  rating       Int
+  feedbackText String
+  category     String
+  route        String
+  city         String
+  tripDate     DateTime
+  tripDuration Int
+  createdAt    DateTime @default(now())
+  aiSummary    String?
+  aiSuggestion String?
+  sentiment    String
+}
+
+model DailyStats {
+  id            String   @id @default(uuid())
+  date          DateTime @unique
+  totalCount    Int
+  avgRating     Float
+  positiveCount Int
+  negativeCount Int
+  neutralCount  Int
+}

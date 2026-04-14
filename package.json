@@ -1,0 +1,53 @@
+{
+  "name": "robotaxi-feedback-platform",
+  "version": "0.1.0",
+  "private": true,
+  "prisma": {
+    "seed": "tsx seed.ts"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "prisma migrate dev --name init",
+    "db:seed": "tsx seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-scroll-area": "^1.0.5",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^3.0.6",
+    "lucide-react": "^0.303.0",
+    "next": "14.0.4",
+    "openai": "^4.24.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^2.10.3",
+    "tailwind-merge": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "prisma": "^5.7.1",
+    "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

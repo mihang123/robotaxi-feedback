@@ -5,10 +5,5 @@
   "installCommand": "npm install",
   "env": {
     "DATABASE_URL": "file:./prisma/dev.db"
-  },
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "@vercel/node@3"
-    }
   }
 }

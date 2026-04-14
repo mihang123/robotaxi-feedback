@@ -8,7 +8,7 @@
 2. 在 Vercel 导入仓库
 3. 环境变量配置：
    ```
-   DATABASE_URL=file:./dev.db
+   DATABASE_URL=file:./prisma/dev.db
    OPENAI_API_KEY=sk-your-key-here
    ```
 4. 部署

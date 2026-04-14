@@ -34,8 +34,9 @@ yarn-error.log*
 next-env.d.ts
 
 # SQLite database
+# Keep pre-seeded database in prisma folder
 *.db
-*.db-journal
+!prisma/dev.db
 
 # Prisma
 prisma/migrations/

@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import openai from '@/lib/openai';
+
+// 延迟导入 openai 以避免构建时错误
+let openai: any;
+try {
+  openai = require('@/lib/openai').default;
+} catch (error) {
+  // 导入失败，使用模拟数据
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,6 +14,29 @@ export async function POST(request: NextRequest) {
 
     if (!feedbacks || feedbacks.length === 0) {
       return NextResponse.json({ error: 'feedbacks array is required' }, { status: 400 });
+    }
+
+    // 检查 openai 是否可用
+    if (!openai || !process.env.OPENAI_API_KEY) {
+      return NextResponse.json({
+        summary: "AI分析暂不可用，请配置OpenAI API Key",
+        keyPoints: ["行驶体验", "车内环境", "接驾体验"],
+        userNeeds: "用户希望获得更平稳的行驶体验和更舒适的车内环境",
+        suggestions: [
+          {
+            problem: "行驶过程中急刹车",
+            solution: "优化刹车算法，提前预判路况",
+            priority: "high",
+            impact: "提升乘客乘坐舒适度"
+          },
+          {
+            problem: "车内温度控制",
+            solution: "增加智能温度调节功能",
+            priority: "medium",
+            impact: "改善车内环境体验"
+          }
+        ]
+      });
     }
 
     const feedbackSample = feedbacks

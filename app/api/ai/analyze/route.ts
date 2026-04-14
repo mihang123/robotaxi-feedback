@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import openai from '@/lib/openai';
 import { prisma } from '@/lib/prisma';
+
+// 延迟导入 openai 以避免构建时错误
+let openai: any;
+try {
+  openai = require('@/lib/openai').default;
+} catch (error) {
+  // 导入失败，使用模拟数据
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +15,16 @@ export async function POST(request: NextRequest) {
 
     if (!feedbackText) {
       return NextResponse.json({ error: 'feedbackText is required' }, { status: 400 });
+    }
+
+    // 检查 openai 是否可用
+    if (!openai || !process.env.OPENAI_API_KEY) {
+      return NextResponse.json({
+        category: '行驶体验',
+        sentiment: 'positive',
+        confidence: 0.85,
+        summary: 'AI分析暂不可用，请配置OpenAI API Key',
+      });
     }
 
     const prompt = `分析以下Robotaxi乘客反馈，将其分类到以下类别之一：行驶体验、车内环境、接驾体验、路线规划、安全感受、其他。

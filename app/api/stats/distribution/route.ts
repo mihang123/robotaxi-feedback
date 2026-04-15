@@ -75,6 +75,56 @@ export async function GET() {
     return NextResponse.json({ byRoute, byCategory, byRating, byCity, bySentiment, byTimePeriod });
   } catch (error) {
     console.error('GET /api/stats/distribution error:', error);
+    
+    const isDemo = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('file:');
+    if (isDemo) {
+      return NextResponse.json({
+        byRoute: [
+          { route: '望京SOHO-中关村', count: 18, avgRating: 4.3 },
+          { route: '国贸CBD-三里屯', count: 15, avgRating: 4.1 },
+          { route: '中关村-清华西门', count: 12, avgRating: 4.5 },
+          { route: '北京南站-前门', count: 10, avgRating: 3.9 },
+          { route: '首都机场T3-望京', count: 8, avgRating: 4.2 },
+        ],
+        byCategory: [
+          { category: '行驶体验', count: 45 },
+          { category: '车内环境', count: 32 },
+          { category: '接驾体验', count: 28 },
+          { category: '路线规划', count: 15 },
+          { category: '安全感受', count: 12 },
+          { category: '其他', count: 8 },
+        ],
+        byRating: [
+          { rating: 5, count: 38 },
+          { rating: 4, count: 32 },
+          { rating: 3, count: 25 },
+          { rating: 2, count: 19 },
+          { rating: 1, count: 13 },
+        ],
+        byCity: [
+          { city: '北京', count: 65, avgRating: 4.2 },
+          { city: '上海', count: 38, avgRating: 4.3 },
+          { city: '深圳', count: 24, avgRating: 4.1 },
+        ],
+        bySentiment: [
+          { sentiment: 'positive', count: 87 },
+          { sentiment: 'neutral', count: 17 },
+          { sentiment: 'negative', count: 23 },
+        ],
+        byTimePeriod: [
+          { period: '早高峰 (7-9)', count: 22 },
+          { period: '上午 (9-12)', count: 18 },
+          { period: '午间 (12-14)', count: 15 },
+          { period: '下午 (14-17)', count: 20 },
+          { period: '晚高峰 (17-19)', count: 25 },
+          { period: '晚间 (19-22)', count: 19 },
+          { period: '深夜 (22-次日7)', count: 8 },
+        ],
+        _demo: true,
+        message: '演示模式：使用模拟数据'
+      });
+    }
+    
     return NextResponse.json({
       error: 'Failed to fetch distribution',
       message: error instanceof Error ? error.message : 'Unknown error',

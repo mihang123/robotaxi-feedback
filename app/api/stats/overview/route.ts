@@ -31,6 +31,22 @@ export async function GET() {
     });
   } catch (error) {
     console.error('GET /api/stats/overview error:', error);
+    
+    const isDemo = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('file:');
+    if (isDemo) {
+      return NextResponse.json({
+        totalFeedback: 127,
+        avgRating: 4.2,
+        positiveRate: 68.5,
+        negativeRate: 18.1,
+        neutralRate: 13.4,
+        todayCount: 8,
+        weekCount: 45,
+        _demo: true,
+        message: '演示模式：使用模拟数据'
+      });
+    }
+    
     return NextResponse.json({
       error: 'Failed to fetch stats',
       message: error instanceof Error ? error.message : 'Unknown error',

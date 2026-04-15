@@ -65,6 +65,27 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('GET /api/feedback error:', error);
+    
+    const isDemo = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('file:');
+    if (isDemo) {
+      const mockFeedback = [
+        { id: '1', passengerId: 'P001', tripId: 'T001', vehicleId: 'V001', rating: 5, feedbackText: '行驶平稳舒适，非常满意！', category: '行驶体验', route: '望京SOHO-中关村', city: '北京', tripDate: new Date().toISOString(), tripDuration: 25, createdAt: new Date().toISOString(), sentiment: 'positive' },
+        { id: '2', passengerId: 'P002', tripId: 'T002', vehicleId: 'V002', rating: 4, feedbackText: '车内环境干净整洁', category: '车内环境', route: '国贸CBD-三里屯', city: '北京', tripDate: new Date().toISOString(), tripDuration: 18, createdAt: new Date().toISOString(), sentiment: 'positive' },
+        { id: '3', passengerId: 'P003', tripId: 'T003', vehicleId: 'V003', rating: 3, feedbackText: '等车时间有点长', category: '接驾体验', route: '中关村-清华西门', city: '北京', tripDate: new Date().toISOString(), tripDuration: 20, createdAt: new Date().toISOString(), sentiment: 'neutral' },
+        { id: '4', passengerId: 'P004', tripId: 'T004', vehicleId: 'V004', rating: 5, feedbackText: '路线规划很智能', category: '路线规划', route: '北京南站-前门', city: '北京', tripDate: new Date().toISOString(), tripDuration: 30, createdAt: new Date().toISOString(), sentiment: 'positive' },
+        { id: '5', passengerId: 'P005', tripId: 'T005', vehicleId: 'V005', rating: 4, feedbackText: '安全感受很好', category: '安全感受', route: '首都机场T3-望京', city: '北京', tripDate: new Date().toISOString(), tripDuration: 45, createdAt: new Date().toISOString(), sentiment: 'positive' },
+      ];
+      return NextResponse.json({
+        data: mockFeedback,
+        total: 127,
+        page: 1,
+        pageSize: 10,
+        totalPages: 13,
+        _demo: true,
+        message: '演示模式：使用模拟数据'
+      });
+    }
+    
     return NextResponse.json({ 
       error: 'Failed to fetch feedback',
       message: error instanceof Error ? error.message : 'Unknown error',

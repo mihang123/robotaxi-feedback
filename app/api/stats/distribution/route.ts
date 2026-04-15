@@ -75,6 +75,15 @@ export async function GET() {
     return NextResponse.json({ byRoute, byCategory, byRating, byCity, bySentiment, byTimePeriod });
   } catch (error) {
     console.error('GET /api/stats/distribution error:', error);
-    return NextResponse.json({ error: 'Failed to fetch distribution' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to fetch distribution',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      byRoute: [],
+      byCategory: [],
+      byRating: [],
+      byCity: [],
+      bySentiment: [],
+      byTimePeriod: []
+    }, { status: 500 });
   }
 }

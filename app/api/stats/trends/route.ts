@@ -47,6 +47,9 @@ export async function GET() {
     return NextResponse.json(trends);
   } catch (error) {
     console.error('GET /api/stats/trends error:', error);
-    return NextResponse.json({ error: 'Failed to fetch trends' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to fetch trends',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    }, { status: 500 });
   }
 }

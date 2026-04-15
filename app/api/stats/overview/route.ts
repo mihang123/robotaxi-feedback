@@ -31,6 +31,16 @@ export async function GET() {
     });
   } catch (error) {
     console.error('GET /api/stats/overview error:', error);
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to fetch stats',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      totalFeedback: 0,
+      avgRating: 0,
+      positiveRate: 0,
+      negativeRate: 0,
+      neutralRate: 0,
+      todayCount: 0,
+      weekCount: 0,
+    }, { status: 500 });
   }
 }

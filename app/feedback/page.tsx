@@ -14,13 +14,23 @@ const DEFAULT_FILTERS: FeedbackFilter = {
   sentiment: 'all',
 };
 
+const DEFAULT_DATA: FeedbackListResponse = {
+  data: [],
+  total: 0,
+  page: 1,
+  pageSize: 10,
+  totalPages: 0
+};
+
 export default function FeedbackPage() {
   const [filters, setFilters] = useState<FeedbackFilter>(DEFAULT_FILTERS);
-  const [data, setData] = useState<FeedbackListResponse | null>(null);
+  const [data, setData] = useState<FeedbackListResponse>(DEFAULT_DATA);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFeedback = useCallback(async (f: FeedbackFilter) => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (f.page) params.set('page', String(f.page));
@@ -37,10 +47,15 @@ export default function FeedbackPage() {
       if (f.sortOrder) params.set('sortOrder', f.sortOrder);
 
       const res = await fetch(`/api/feedback?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const json = await res.json();
       setData(json);
     } catch (e) {
       console.error('Failed to fetch feedback', e);
+      setError(e instanceof Error ? e.message : '加载数据失败');
+      setData(DEFAULT_DATA);
     } finally {
       setLoading(false);
     }
@@ -68,6 +83,13 @@ export default function FeedbackPage() {
         <h1 className="text-xl font-bold text-white">反馈列表</h1>
         <p className="text-sm text-slate-400 mt-1">查看和管理所有乘客反馈数据</p>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
+          <p className="font-medium">加载数据出错</p>
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
 
       <FeedbackFilterBar filters={filters} onFilterChange={handleFilterChange} />
       <FeedbackTable

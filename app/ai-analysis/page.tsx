@@ -15,13 +15,23 @@ const DEFAULT_FILTERS: FeedbackFilter = {
   sentiment: 'all',
 };
 
+const DEFAULT_DATA: FeedbackListResponse = {
+  data: [],
+  total: 0,
+  page: 1,
+  pageSize: 20,
+  totalPages: 0
+};
+
 export default function AIAnalysisPage() {
   const [filters, setFilters] = useState<FeedbackFilter>(DEFAULT_FILTERS);
-  const [data, setData] = useState<FeedbackListResponse | null>(null);
+  const [data, setData] = useState<FeedbackListResponse>(DEFAULT_DATA);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFeedback = useCallback(async (f: FeedbackFilter) => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (f.page) params.set('page', String(f.page));
@@ -32,10 +42,15 @@ export default function AIAnalysisPage() {
       if (f.sentiment && f.sentiment !== 'all') params.set('sentiment', f.sentiment);
 
       const res = await fetch(`/api/feedback?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const json = await res.json();
       setData(json);
     } catch (e) {
       console.error('Failed to fetch feedback', e);
+      setError(e instanceof Error ? e.message : '加载数据失败');
+      setData(DEFAULT_DATA);
     } finally {
       setLoading(false);
     }
@@ -58,6 +73,13 @@ export default function AIAnalysisPage() {
         <h1 className="text-xl font-bold text-white">AI 智能分析</h1>
         <p className="text-sm text-slate-400 mt-1">利用大模型分析批量反馈，生成摘要、洞察与产品建议</p>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
+          <p className="font-medium">加载数据出错</p>
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
 
       <AIAnalyzer feedbacks={feedbacks} totalCount={totalCount} />
 

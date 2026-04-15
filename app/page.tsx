@@ -8,21 +8,48 @@ import DistributionCharts from '@/components/Dashboard/DistributionCharts';
 import CategoryRouteCharts from '@/components/Dashboard/CategoryRouteCharts';
 import { OverviewStats, TrendData, DistributionData } from '@/types';
 
+const DEFAULT_STATS: OverviewStats = {
+  totalFeedback: 0,
+  avgRating: 0,
+  positiveRate: 0,
+  negativeRate: 0,
+  neutralRate: 0,
+  todayCount: 0,
+  weekCount: 0,
+};
+
+const DEFAULT_TRENDS: TrendData[] = [];
+const DEFAULT_DISTRIBUTION: DistributionData = {
+  byRoute: [],
+  byCategory: [],
+  byRating: [],
+  byCity: [],
+  bySentiment: [],
+  byTimePeriod: [],
+};
+
 export default function DashboardPage() {
-  const [stats, setStats] = useState<OverviewStats | null>(null);
-  const [trends, setTrends] = useState<TrendData[]>([]);
-  const [distribution, setDistribution] = useState<DistributionData | null>(null);
+  const [stats, setStats] = useState<OverviewStats>(DEFAULT_STATS);
+  const [trends, setTrends] = useState<TrendData[]>(DEFAULT_TRENDS);
+  const [distribution, setDistribution] = useState<DistributionData>(DEFAULT_DISTRIBUTION);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [statsRes, trendsRes, distRes] = await Promise.all([
         fetch('/api/stats/overview'),
         fetch('/api/stats/trends'),
         fetch('/api/stats/distribution'),
       ]);
+      
+      if (!statsRes.ok || !trendsRes.ok || !distRes.ok) {
+        throw new Error('Failed to fetch dashboard data');
+      }
+      
       const [statsData, trendsData, distData] = await Promise.all([
         statsRes.json(),
         trendsRes.json(),
@@ -34,6 +61,10 @@ export default function DashboardPage() {
       setLastUpdated(new Date());
     } catch (e) {
       console.error('Failed to fetch dashboard data', e);
+      setError(e instanceof Error ? e.message : '加载数据失败');
+      setStats(DEFAULT_STATS);
+      setTrends(DEFAULT_TRENDS);
+      setDistribution(DEFAULT_DISTRIBUTION);
     } finally {
       setLoading(false);
     }
@@ -63,6 +94,13 @@ export default function DashboardPage() {
           刷新
         </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
+          <p className="font-medium">加载数据出错</p>
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
 
       <StatsCards stats={stats} loading={loading} />
       <TrendChart data={trends} loading={loading} />
